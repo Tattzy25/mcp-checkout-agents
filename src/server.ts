@@ -1,11 +1,10 @@
 import { createMcpHandler } from "agents/mcp/server";
-import {
-  McpServer,
-  type ServerContext,
-} from "@modelcontextprotocol/server";
+import { McpServer } from "@modelcontextprotocol/server";
 import { z } from "zod";
 
 const SHOPIFY_USER_AGENT = "ShoppingTools/1.0";
+
+type Env = {};
 
 type CheckoutMeta = {
   "ucp-agent": {
@@ -28,30 +27,7 @@ type CheckoutArgs = {
   checkout?: Record<string, unknown>;
 };
 
-function createMerchantHeaders(request?: Request) {
-  const headers = new Headers({
-    "Content-Type": "application/json",
-    Accept: "application/json",
-    "User-Agent": SHOPIFY_USER_AGENT,
-  });
-
-  for (const name of [
-    "authorization",
-    "signature",
-    "signature-input",
-    "content-digest",
-    "digest",
-  ]) {
-    const value = request?.headers.get(name);
-    if (value) {
-      headers.set(name, value);
-    }
-  }
-
-  return headers;
-}
-
-function createServer() {
+function createServer(env: Env) {
   const server = new McpServer({
     name: "MCP Checkout Agents",
     version: "1.0.0",
@@ -111,10 +87,7 @@ function createServer() {
         }
       }),
     },
-    async (
-      { merchant_mcp_url, meta, cart_id, checkout }: CreateCheckoutArgs,
-      ctx: ServerContext,
-    ) => {
+    async ({ merchant_mcp_url, meta, cart_id, checkout }: CreateCheckoutArgs) => {
       const merchantRequest = {
         jsonrpc: "2.0",
         id: crypto.randomUUID(),
@@ -131,7 +104,11 @@ function createServer() {
 
       const merchantResponse = await fetch(merchant_mcp_url, {
         method: "POST",
-        headers: createMerchantHeaders(ctx.http?.req),
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+          "User-Agent": SHOPIFY_USER_AGENT,
+        },
         body: JSON.stringify(merchantRequest),
       });
 
@@ -163,10 +140,7 @@ function createServer() {
         id: z.string(),
       }),
     },
-    async (
-      { merchant_mcp_url, meta, id }: CheckoutArgs,
-      ctx: ServerContext,
-    ) => {
+    async ({ merchant_mcp_url, meta, id }: CheckoutArgs) => {
       const merchantRequest = {
         jsonrpc: "2.0",
         id: crypto.randomUUID(),
@@ -182,7 +156,11 @@ function createServer() {
 
       const merchantResponse = await fetch(merchant_mcp_url, {
         method: "POST",
-        headers: createMerchantHeaders(ctx.http?.req),
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+          "User-Agent": SHOPIFY_USER_AGENT,
+        },
         body: JSON.stringify(merchantRequest),
       });
 
@@ -245,10 +223,7 @@ function createServer() {
           .passthrough(),
       }),
     },
-    async (
-      { merchant_mcp_url, meta, id, checkout }: CheckoutArgs,
-      ctx: ServerContext,
-    ) => {
+    async ({ merchant_mcp_url, meta, id, checkout }: CheckoutArgs) => {
       const merchantRequest = {
         jsonrpc: "2.0",
         id: crypto.randomUUID(),
@@ -265,7 +240,11 @@ function createServer() {
 
       const merchantResponse = await fetch(merchant_mcp_url, {
         method: "POST",
-        headers: createMerchantHeaders(ctx.http?.req),
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+          "User-Agent": SHOPIFY_USER_AGENT,
+        },
         body: JSON.stringify(merchantRequest),
       });
 
@@ -303,10 +282,7 @@ function createServer() {
           .passthrough(),
       }),
     },
-    async (
-      { merchant_mcp_url, meta, id, checkout }: CheckoutArgs,
-      ctx: ServerContext,
-    ) => {
+    async ({ merchant_mcp_url, meta, id, checkout }: CheckoutArgs) => {
       const merchantRequest = {
         jsonrpc: "2.0",
         id: crypto.randomUUID(),
@@ -323,7 +299,11 @@ function createServer() {
 
       const merchantResponse = await fetch(merchant_mcp_url, {
         method: "POST",
-        headers: createMerchantHeaders(ctx.http?.req),
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+          "User-Agent": SHOPIFY_USER_AGENT,
+        },
         body: JSON.stringify(merchantRequest),
       });
 
@@ -356,10 +336,7 @@ function createServer() {
         id: z.string(),
       }),
     },
-    async (
-      { merchant_mcp_url, meta, id }: CheckoutArgs,
-      ctx: ServerContext,
-    ) => {
+    async ({ merchant_mcp_url, meta, id }: CheckoutArgs) => {
       const merchantRequest = {
         jsonrpc: "2.0",
         id: crypto.randomUUID(),
@@ -375,7 +352,11 @@ function createServer() {
 
       const merchantResponse = await fetch(merchant_mcp_url, {
         method: "POST",
-        headers: createMerchantHeaders(ctx.http?.req),
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+          "User-Agent": SHOPIFY_USER_AGENT,
+        },
         body: JSON.stringify(merchantRequest),
       });
 
@@ -397,6 +378,6 @@ function createServer() {
 
 export default {
   fetch(request, env, ctx) {
-    return createMcpHandler(createServer)(request, env, ctx);
+    return createMcpHandler(() => createServer(env))(request, env, ctx);
   },
-} satisfies ExportedHandler;
+} satisfies ExportedHandler<Env>;
