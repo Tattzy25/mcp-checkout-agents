@@ -28,7 +28,6 @@
 	"routes": [
 		{
 			"pattern": "mcp-checkout-agents.tattty.com",
-			"zone_name": "tattty.com",
 			"custom_domain": true,
 			"enabled": true,
 			"previews_enabled": false

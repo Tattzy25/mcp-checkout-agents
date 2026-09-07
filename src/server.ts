@@ -49,15 +49,14 @@ function createServer(env: Env) {
         checkout: z
           .object({
             currency: z.string(),
-            line_items: z
-              .array(
-                z.object({
-                  quantity: z.number().int().min(1),
-                  item: z.object({
-                    id: z.string(),
-                  }),
-                })
-              ),
+            line_items: z.array(
+              z.object({
+                quantity: z.number().int().min(1),
+                item: z.object({
+                  id: z.string(),
+                }),
+              }),
+            ),
             buyer: z.record(z.string(), z.unknown()),
             context: z
               .object({
@@ -122,7 +121,7 @@ function createServer(env: Env) {
           },
         ],
       };
-    }
+    },
   );
 
   server.registerTool(
@@ -174,7 +173,7 @@ function createServer(env: Env) {
           },
         ],
       };
-    }
+    },
   );
 
   server.registerTool(
@@ -193,16 +192,15 @@ function createServer(env: Env) {
         checkout: z
           .object({
             currency: z.string().optional(),
-            line_items: z
-              .array(
-                z.object({
-                  id: z.string().optional(),
-                  quantity: z.number().int().min(1),
-                  item: z.object({
-                    id: z.string(),
-                  }),
-                })
-              ),
+            line_items: z.array(
+              z.object({
+                id: z.string().optional(),
+                quantity: z.number().int().min(1),
+                item: z.object({
+                  id: z.string(),
+                }),
+              }),
+            ),
             buyer: z.record(z.string(), z.unknown()),
             context: z
               .object({
@@ -258,7 +256,7 @@ function createServer(env: Env) {
           },
         ],
       };
-    }
+    },
   );
 
   server.registerTool(
@@ -317,7 +315,7 @@ function createServer(env: Env) {
           },
         ],
       };
-    }
+    },
   );
 
   server.registerTool(
@@ -370,7 +368,7 @@ function createServer(env: Env) {
           },
         ],
       };
-    }
+    },
   );
 
   return server;
